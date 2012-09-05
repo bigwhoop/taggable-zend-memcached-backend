@@ -1,0 +1,23 @@
+{
+  "name": "trekksoft/taggable-zend-memcached-backend",
+  "description": "Zend_Cache (ZF 1) memcached backend (not libmemcached) with support for tags",
+  "keywords": ["gettext"],
+  "homepage": "https://github.com/bigwhoop/taggable-zend-memcached-backend",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Philippe Gerber",
+      "email": "philippe@bigwhoop.ch",
+      "homepage": "http://bigwhoop.ch"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "TrekkSoft\\Cache\TaggableZendMemcachedBackend": "src/"
+    }
+  }
+}
