@@ -19,8 +19,8 @@ use Zend_Cache,
  */
 class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
 {
-    const TAG_SEPARATOR = '|';
-    const TAG_NAME_FORMAT = '__tag_%s';
+    const TAG_NAME_FORMAT = 'tag___%s';
+    const TAG_LIFE_TIME   = '1 day';
     
     
     /**
@@ -73,7 +73,7 @@ class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
     public function save($data, $id, $tags = array(), $specificLifetime = false)
     {
         $this->storeTagsForId($id, $tags);
-        return parent::save($data, $this->normalizeId($id), $tags, $specificLifetime);
+        return parent::save($data, $this->normalizeId($id), array(), $specificLifetime);
     }
 
 
@@ -215,13 +215,13 @@ class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
      */
     private function getIdsForTag($tag)
     {
-        $ids = $this->load($this->getTagId($tag));
+        $ids = $this->load($this->formatTagId($tag));
         
         if (empty($ids)) {
             return array();
         }
         
-        return explode(self::TAG_SEPARATOR, (string)$ids);
+        return (array)unserialize((string)$ids);
     }
 
 
@@ -237,10 +237,10 @@ class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
             if (!in_array($entryId, $idsInTag)) {
                 $idsInTag[] = $entryId;
                 
-                $tagId = $this->getTagId($tag);
-                $tagValue = join(self::TAG_SEPARATOR, $idsInTag);
+                $tagId    = $this->formatTagId($tag);
+                $tagValue = serialize($idsInTag);
                 
-                $this->save($tagValue, $tagId);
+                $this->save($tagValue, $tagId, array(), $this->getTagLifeTime());
             }
         }
     }
@@ -264,15 +264,15 @@ class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
      */
     private function removeIdFromTag($tag, $entryId)
     {
-        $tagId    = $this->getTagId($tag);
+        $tagId    = $this->formatTagId($tag);
         $idsInTag = $this->getIdsForTag($tag);
         
         $idxOfEntryId = array_search($entryId, $idsInTag);
         if ($idxOfEntryId > -1) {
             unset($idsInTag[$idxOfEntryId]);
             
-            $tagValue = join(self::TAG_SEPARATOR, $idsInTag);
-            $this->save($tagValue, $tagId);
+            $tagValue = serialize($idsInTag);
+            $this->save($tagValue, $tagId, array(), $this->getTagLifeTime());
         }
     }
 
@@ -281,7 +281,7 @@ class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
      * @param string $tag
      * @return string
      */
-    private function getTagId($tag)
+    private function formatTagId($tag)
     {
         return sprintf(self::TAG_NAME_FORMAT, $tag);
     }
@@ -296,5 +296,14 @@ class TaggableZendMemcachedBackend extends Zend_Cache_Backend_Memcached
         $caps['tags'] = true;
         
         return $caps;
+    }
+
+
+    /**
+     * @return int
+     */
+    private function getTagLifeTime()
+    {
+        return strtotime(self::TAG_LIFE_TIME, 0);
     }
 }
