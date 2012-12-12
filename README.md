@@ -6,7 +6,7 @@ Basic support for tags. You can invalidate entries with the following cleaning m
  
 * `Zend_Cache::CLEANING_MODE_ALL`
 * `Zend_Cache::CLEANING_MODE_MATCHING_TAG`
-* `Zend_Cache::CLEANING_MODE_NOT_MATCHING_TAG`
+* `Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG`
 
 There is also support to prefix your cache entries. Just pass the `prefix_key` option in the ctor.
 
