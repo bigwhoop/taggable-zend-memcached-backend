@@ -17,10 +17,9 @@ There is also support to prefix your cache entries. Just pass the `prefix_key` o
 
 ## Installation
 
-Add `"trekksoft/taggable-zend-memcached-backend" : "dev-master"` to your `composer.json`.
-Run `compser update`.
+`compser require "trekksoft/taggable-zend-memcached-backend":"dev-master"`
 
-## Use
+## Usage
 
 When using the cache manager, make sure to set `'customBackendNaming' => true, 'frontendBackendAutoload' => true`. Otherwise ZF will fail to load the backend.
 
